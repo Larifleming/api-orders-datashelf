@@ -1,4 +1,5 @@
 # QA Orders API Challenge
+![CI](https://github.com/Larifleming/api-orders-datashelf/actions/workflows/api-tests.yml/badge.svg)
 
 Este projeto foi desenvolvido para entrega de um desafio técnico de QA, com foco em planejamento, priorização por risco e automação de testes de API.
 
