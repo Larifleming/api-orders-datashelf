@@ -1,4 +1,4 @@
-# Bug Report
+# Bug Report 1
 
 ## Título
 Mensagens de validação no POST /orders não informam qual campo está inválido
@@ -35,8 +35,9 @@ API deve informar exatamente qual campo está inválido ou faltando, por exemplo
     { "field": "customer", "reason": "required" }
   ]
 }
+```
 
-##Evidências:
+## Evidências:
 - Log do Newman mostrando cenário de payload inválido (quando executado).
 - O print do erro pode ser encontrado na pasta:
- `docs/evidences/BUG - pedido sem mensagem clara para o usuário.jpg
+ `docs/evidences/BUG - pedido sem mensagem clara para o usuário.jpg`
