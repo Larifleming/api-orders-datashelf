@@ -27,7 +27,7 @@ jobs:
         run: |
           cd api
           node server.js &
-          sleep 3
+          sleep 5
 
       - name: Install Newman
         run: npm install -g newman
@@ -36,3 +36,4 @@ jobs:
         run: |
           newman run "postman/Orders API Tests.postman_collection.json" \
             -e "postman/Orders.postman_environment.json"
+
