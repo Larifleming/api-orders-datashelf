@@ -41,8 +41,8 @@ http://localhost:3000
 Com a API rodando em um terminal separado, execute em outro terminal:
 
 ```bash
-cd C:\Projetos\orders-api-datashelf
-newman run "postman\Orders API Tests.postman_collection.json" -e "postman\Orders.postman_environment.json"
+cd C:\Projetos\orders-api-datashelf\postman
+newman run "Orders API Tests.postman_collection.json" -e "Orders.postman_environment.json"
 ```
 
 ## Escopo dos testes automatizados
