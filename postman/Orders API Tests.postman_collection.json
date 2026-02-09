@@ -1,0 +1,294 @@
+{
+  "info": {
+    "_postman_id": "b5e40f66-d673-4738-9525-10141fc97657",
+    "name": "Orders API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36785100",
+    "_collection_link": "https://go.postman.co/collection/36785100-b5e40f66-d673-4738-9525-10141fc97657?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Create Order",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.environment.set(\"orderId\", \"ORD-\" + Date.now());\r",
+              "pm.environment.set(\"pollCount\", 0);\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 201\", () => {\r",
+              "  pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Resposta deve conter status PENDING\", () => {\r",
+              "  const json = pm.response.json();\r",
+              "  pm.expect(json.status).to.eql(\"PENDING\");\r",
+              "  pm.expect(json).to.have.property(\"orderId\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"orderId\": \"{{orderId}}\",\r\n  \"customer\": \"Larissa\",\r\n  \"total\": 100\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Order Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 200\", () => {\r",
+              "  pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Campo status deve ser PENDING/PROCESSED/FAILED\", () => {\r",
+              "  const json = pm.response.json();\r",
+              "  pm.expect([\"PENDING\",\"PROCESSED\",\"FAILED\"]).to.include(json.status);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/orders/{{orderId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders",
+            "{{orderId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Poll Until PROCESSED",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();\r",
+              "const status = json.status;\r",
+              "\r",
+              "let pollCount = parseInt(pm.environment.get(\"pollCount\") || \"0\", 10);\r",
+              "const max = parseInt(pm.environment.get(\"maxPollAttempts\") || \"30\", 10);\r",
+              "\r",
+              "pm.test(\"Status deve existir\", () => {\r",
+              "  pm.expect(status).to.be.a(\"string\");\r",
+              "});\r",
+              "\r",
+              "if (status === \"PENDING\") {\r",
+              "  pollCount += 1;\r",
+              "  pm.environment.set(\"pollCount\", pollCount);\r",
+              "\r",
+              "  if (pollCount >= max) {\r",
+              "    throw new Error(`Falhou: não processou a tempo (PENDING após ${pollCount} tentativas)`);\r",
+              "  }\r",
+              "  setTimeout(() => {\r",
+              "    pm.execution.setNextRequest(\"Poll Until PROCESSED\");\r",
+              "  }, 1000);\r",
+              "} else if (status === \"PROCESSED\") {\r",
+              "  pm.test(\"Pedido deve estar PROCESSED\", () => {\r",
+              "    pm.expect(status).to.eql(\"PROCESSED\");\r",
+              "  });\r",
+              "  pm.execution.setNextRequest(null);\r",
+              "} else if (status === \"FAILED\") {\r",
+              "  throw new Error(\"Pedido retornou FAILED\");\r",
+              "}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/orders/{{orderId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders",
+            "{{orderId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Orders Duplicate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Deve bloquear duplicidade (409)\", () => {\r",
+              "  pm.response.to.have.status(409);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"orderId\": \"{{orderId}}\",\r\n  \"customer\": \"Larissa\",\r\n  \"total\": 100\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid Payload",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Deve retornar 400 para payload inválido\", () => {\r",
+              "  pm.response.to.have.status(400);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"orderId\": \"ORD-INVALID\",\r\n  \"total\": 100\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
