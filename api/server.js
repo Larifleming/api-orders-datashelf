@@ -2,10 +2,8 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
-// "Banco" em memória: some quando você fecha o servidor
 const orders = new Map();
 
-// Simula processamento assíncrono
 const PROCESSING_DELAY_MS = 4000;
 
 function isValidOrder(body) {
@@ -17,7 +15,6 @@ function isValidOrder(body) {
   return true;
 }
 
-// POST /orders
 app.post("/orders", (req, res) => {
   const { orderId } = req.body || {};
 
@@ -39,7 +36,7 @@ app.post("/orders", (req, res) => {
     });
   }
 
-  // cria pedido como PENDING
+  // criar pedido como PENDING
   orders.set(orderId, {
     orderId,
     customer: req.body.customer,
