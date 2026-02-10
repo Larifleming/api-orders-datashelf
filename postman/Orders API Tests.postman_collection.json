@@ -83,6 +83,16 @@
               "  const json = pm.response.json();\r",
               "  pm.expect([\"PENDING\",\"PROCESSED\",\"FAILED\"]).to.include(json.status);\r",
               "});\r",
+              "\r",
+              "pm.test(\"Contrato básico do pedido\", function () {\r",
+              "    const json = pm.response.json();\r",
+              "\r",
+              "    pm.expect(json).to.have.property(\"orderId\");\r",
+              "    pm.expect(json).to.have.property(\"status\");\r",
+              "    pm.expect(json.orderId).to.be.a(\"string\");\r",
+              "    pm.expect(json.status).to.be.a(\"string\");\r",
+              "});\r",
+              "\r",
               ""
             ],
             "type": "text/javascript",
@@ -93,8 +103,12 @@
         {
           "listen": "prerequest",
           "script": {
-            "exec": [],
-            "type": "text/javascript"
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
